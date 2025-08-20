@@ -46,7 +46,7 @@ class QRoiManagerButtons(QtW.QWidget):
         self._show_all_checkbox = QtW.QCheckBox("Show All", self)
         self._show_all_checkbox.setChecked(True)
 
-        self._save_image_path_checkbox = QtW.QCheckBox("Save image path", self)
+        self._save_image_path_checkbox = QtW.QCheckBox("Save\nimage path", self)
         self._save_image_path_checkbox.setToolTip(
             "Include reference image path when saving ROIs."
         )

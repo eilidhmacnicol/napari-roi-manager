@@ -62,7 +62,7 @@ class RoiData:
         if self.names is not None:
             out["names"] = self.names
         if self.image_path is not None:
-            out["image_path"] = self.image_path
+            out["IntendedFor"] = self.image_path
         return out
 
     @classmethod
@@ -71,5 +71,5 @@ class RoiData:
         data = [np.array(d) for d in js["data"]]
         shape_type = js["shape_type"]
         names = js.get("names")
-        image_path = js.get("image_path")
+        image_path = js.get("IntendedFor")
         return RoiData(data, shape_type=shape_type, names=names, image_path=image_path)

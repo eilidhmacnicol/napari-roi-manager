@@ -109,7 +109,7 @@ def test_read_write(make_napari_viewer: Callable[[], napari.Viewer]):
         roi_manager.save_roiset(path=Path(tmpdir) / "test_save_roiset.json")
 
 
-def test_save_with_image_path(make_napari_viewer: Callable[[], napari.Viewer]):
+def test_save_with_intended_for(make_napari_viewer: Callable[[], napari.Viewer]):
     viewer = make_napari_viewer()
     with tempfile.TemporaryDirectory() as tmpdir:
         image = Path(tmpdir) / "image.tif"
@@ -129,4 +129,4 @@ def test_save_with_image_path(make_napari_viewer: Callable[[], napari.Viewer]):
 
         with open(out_json) as f:
             js = json.load(f)
-        assert js["image_path"] == os.path.relpath(image, start=out_dir)
+        assert js["IntendedFor"] == os.path.relpath(image, start=out_dir)
