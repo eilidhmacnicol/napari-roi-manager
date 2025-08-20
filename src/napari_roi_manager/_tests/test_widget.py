@@ -1,3 +1,5 @@
+import json
+import os
 import tempfile
 from pathlib import Path
 from typing import Callable
@@ -105,3 +107,21 @@ def test_read_write(make_napari_viewer: Callable[[], napari.Viewer]):
     )
     with tempfile.TemporaryDirectory() as tmpdir:
         roi_manager.save_roiset(path=Path(tmpdir) / "test_save_roiset.json")
+
+
+def test_save_with_image_path(make_napari_viewer: Callable[[], napari.Viewer]):
+    viewer = make_napari_viewer()
+    roi_manager = QRoiManager(viewer)
+    roi_manager.add(_rectangle(0, 0), shape_type="rectangle")
+    roi_manager.register()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        image = Path(tmpdir) / "image.tif"
+        image.touch()
+        out_dir = Path(tmpdir) / "out"
+        out_dir.mkdir()
+        out_json = out_dir / "rois.json"
+        roi_manager.save_roiset(path=out_json, image_path=image)
+
+        with open(out_json) as f:
+            js = json.load(f)
+        assert js["image_path"] == os.path.relpath(image, start=out_dir)

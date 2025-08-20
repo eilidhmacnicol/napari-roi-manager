@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import weakref
 from contextlib import nullcontext
 from enum import Enum
@@ -153,9 +154,29 @@ class RoiManagerLayer(Shapes):
         self.refresh()
         return None
 
-    def write_json(self, path: str | Path) -> None:
-        """Write the ROI data to a JSON file."""
-        js = self.get_roi_data().to_json_dict()
+    def write_json(
+        self, path: str | Path, image_path: str | Path | None = None
+    ) -> None:
+        """Write the ROI data to a JSON file.
+
+        Parameters
+        ----------
+        path : str or Path
+            Destination JSON file.
+        image_path : str or Path, optional
+            Reference image path. When provided, the path is stored relative to
+            the location of the JSON file.
+        """
+        roidata = self.get_roi_data()
+        if image_path is not None:
+            rel = os.path.relpath(Path(image_path), start=Path(path).parent)
+            roidata = RoiData(
+                roidata.data,
+                shape_type=roidata.shape_type,
+                names=roidata.names,
+                image_path=rel,
+            )
+        js = roidata.to_json_dict()
         with open(path, "w") as f:
             json.dump(js, f)
         return None

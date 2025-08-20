@@ -53,6 +53,7 @@ class RoiData:
     data: list[NDArray[np.number]] = field(default_factory=list)
     shape_type: list[str] = field(default_factory=list)
     names: list[str] | None = field(default_factory=lambda: None)
+    image_path: str | None = None
 
     def to_json_dict(self) -> dict[str, Any]:
         """Convert RoiData to a JSON serializable dictionary."""
@@ -60,6 +61,8 @@ class RoiData:
         out = {"data": data, "shape_type": self.shape_type}
         if self.names is not None:
             out["names"] = self.names
+        if self.image_path is not None:
+            out["image_path"] = self.image_path
         return out
 
     @classmethod
@@ -68,4 +71,5 @@ class RoiData:
         data = [np.array(d) for d in js["data"]]
         shape_type = js["shape_type"]
         names = js.get("names")
-        return RoiData(data, shape_type=shape_type, names=names)
+        image_path = js.get("image_path")
+        return RoiData(data, shape_type=shape_type, names=names, image_path=image_path)

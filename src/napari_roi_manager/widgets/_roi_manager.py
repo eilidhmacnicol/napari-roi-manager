@@ -264,7 +264,7 @@ class QRoiManager(QtW.QWidget):
                     return
         self._layer.update_from_json(path, append=append)
 
-    def save_roiset(self, *, path=None):
+    def save_roiset(self, *, path=None, image_path=None):
         if path is None:
             file = QtW.QFileDialog.getSaveFileName(
                 self,
@@ -277,4 +277,4 @@ class QRoiManager(QtW.QWidget):
                     return
             else:
                 return
-        self._layer.write_json(path)
+        self._layer.write_json(path, image_path=image_path)
