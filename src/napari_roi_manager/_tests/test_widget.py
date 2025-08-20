@@ -111,16 +111,21 @@ def test_read_write(make_napari_viewer: Callable[[], napari.Viewer]):
 
 def test_save_with_image_path(make_napari_viewer: Callable[[], napari.Viewer]):
     viewer = make_napari_viewer()
-    roi_manager = QRoiManager(viewer)
-    roi_manager.add(_rectangle(0, 0), shape_type="rectangle")
-    roi_manager.register()
     with tempfile.TemporaryDirectory() as tmpdir:
         image = Path(tmpdir) / "image.tif"
         image.touch()
+        layer = viewer.add_image(np.zeros((5, 5)))
+        layer._source = layer._source._replace(path=str(image))
+
+        roi_manager = QRoiManager(viewer)
+        roi_manager.add(_rectangle(0, 0), shape_type="rectangle")
+        roi_manager.register()
+        roi_manager.set_save_image_path(True)
+
         out_dir = Path(tmpdir) / "out"
         out_dir.mkdir()
         out_json = out_dir / "rois.json"
-        roi_manager.save_roiset(path=out_json, image_path=image)
+        roi_manager.save_roiset(path=out_json)
 
         with open(out_json) as f:
             js = json.load(f)

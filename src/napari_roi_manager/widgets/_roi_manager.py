@@ -46,6 +46,11 @@ class QRoiManagerButtons(QtW.QWidget):
         self._show_all_checkbox = QtW.QCheckBox("Show All", self)
         self._show_all_checkbox.setChecked(True)
 
+        self._save_image_path_checkbox = QtW.QCheckBox("Save image path", self)
+        self._save_image_path_checkbox.setToolTip(
+            "Include reference image path when saving ROIs."
+        )
+
         # add all the widgets
         layout.addWidget(self._add_roi_btn)
         layout.addWidget(self._remove_roi_btn)
@@ -55,6 +60,7 @@ class QRoiManagerButtons(QtW.QWidget):
         layout.addWidget(self._to_shapes_btn)
         layout.addWidget(self._text_group)
         layout.addWidget(self._show_all_checkbox)
+        layout.addWidget(self._save_image_path_checkbox)
 
         self.setFixedWidth(115)
 
@@ -231,6 +237,9 @@ class QRoiManager(QtW.QWidget):
     def set_show_all(self, show_all: bool):
         self._btns._show_all_checkbox.setChecked(show_all)
 
+    def set_save_image_path(self, save: bool):
+        self._btns._save_image_path_checkbox.setChecked(save)
+
     def as_shapes_layer(self):
         shapes = self._layer.as_shapes_layer()
         self._viewer.add_layer(shapes)
@@ -277,4 +286,18 @@ class QRoiManager(QtW.QWidget):
                     return
             else:
                 return
+        if image_path is None and self._btns._save_image_path_checkbox.isChecked():
+            image_path = self._get_reference_image_path()
         self._layer.write_json(path, image_path=image_path)
+
+    def _get_reference_image_path(self):
+        layer = self._viewer.layers.selection.active
+        if layer is None or layer is self._layer:
+            for lyr in self._viewer.layers:
+                if lyr is not self._layer:
+                    layer = lyr
+                    break
+            else:
+                return None
+        source = getattr(layer, "source", None)
+        return getattr(source, "path", None)
